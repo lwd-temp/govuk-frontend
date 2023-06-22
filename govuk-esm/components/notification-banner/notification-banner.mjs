@@ -1,39 +1,44 @@
-import { mergeConfigs } from '../../common/index.mjs'
-import { normaliseDataset } from '../../common/normalise-dataset.mjs'
-import '../../vendor/polyfills/Event.mjs' // addEventListener, event.target normalization and DOMContentLoaded
+import { mergeConfigs } from '../../common/index.mjs';
+import { normaliseDataset } from '../../common/normalise-dataset.mjs';
+import '../../vendor/polyfills/Event.mjs';
 
 /**
  * Notification Banner component
  *
  * @class
- * @param {HTMLElement} $module - HTML element to use for notification banner
+ * @param {Element} $module - HTML element to use for notification banner
  * @param {NotificationBannerConfig} [config] - Notification banner config
  */
 function NotificationBanner ($module, config) {
-  this.$module = $module
+  if (!($module instanceof HTMLElement)) {
+    return this
+  }
+
+  this.$module = $module;
 
   var defaultConfig = {
     disableAutoFocus: false
-  }
+  };
+
+  /** @type {NotificationBannerConfig} */
   this.config = mergeConfigs(
     defaultConfig,
     config || {},
     normaliseDataset($module.dataset)
-  )
+  );
 }
 
 /**
  * Initialise component
  */
 NotificationBanner.prototype.init = function () {
-  var $module = this.$module
-  // Check for module
-  if (!$module) {
+  // Check that required elements are present
+  if (!this.$module) {
     return
   }
 
-  this.setFocus()
-}
+  this.setFocus();
+};
 
 /**
  * Focus the element
@@ -46,7 +51,7 @@ NotificationBanner.prototype.init = function () {
  * with another element which should be focused when the page loads.
  */
 NotificationBanner.prototype.setFocus = function () {
-  var $module = this.$module
+  var $module = this.$module;
 
   if (this.config.disableAutoFocus) {
     return
@@ -60,25 +65,25 @@ NotificationBanner.prototype.setFocus = function () {
   // Remove the tabindex on blur as the component doesn't need to be focusable after the page has
   // loaded.
   if (!$module.getAttribute('tabindex')) {
-    $module.setAttribute('tabindex', '-1')
+    $module.setAttribute('tabindex', '-1');
 
     $module.addEventListener('blur', function () {
-      $module.removeAttribute('tabindex')
-    })
+      $module.removeAttribute('tabindex');
+    });
   }
 
-  $module.focus()
-}
-
-export default NotificationBanner
+  $module.focus();
+};
 
 /**
  * Notification banner config
  *
  * @typedef {object} NotificationBannerConfig
- * @property {boolean} [disableAutoFocus = false] -
- *   If set to `true` the notification banner will not be focussed when the page
- *   loads. This only applies if the component has a `role` of `alert` – in
- *   other cases the component will not be focused on page load, regardless of
- *   this option.
+ * @property {boolean} [disableAutoFocus = false] - If set to `true` the
+ *   notification banner will not be focussed when the page loads. This only
+ *   applies if the component has a `role` of `alert` – in other cases the
+ *   component will not be focused on page load, regardless of this option.
  */
+
+export default NotificationBanner;
+//# sourceMappingURL=components/notification-banner/notification-banner.mjs.map

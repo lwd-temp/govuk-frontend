@@ -4,7 +4,8 @@
   (global.GOVUKFrontend = global.GOVUKFrontend || {}, global.GOVUKFrontend.CharacterCount = factory());
 }(this, (function () { 'use strict';
 
-  (function(undefined) {
+  // @ts-nocheck
+  (function (undefined) {
 
     // Detection from https://raw.githubusercontent.com/Financial-Times/polyfill-service/1f3c09b402f65bf6e393f933a15ba63f1b86ef1f/packages/polyfill-library/polyfills/Element/prototype/matches/detect.js
     var detect = (
@@ -27,6 +28,8 @@
     };
 
   }).call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
+
+  // @ts-nocheck
 
   (function(undefined) {
 
@@ -54,15 +57,15 @@
   /**
    * Returns the value of the given attribute closest to the given element (including itself)
    *
-   * @param {HTMLElement} $element - The element to start walking the DOM tree up
+   * @param {Element} $element - The element to start walking the DOM tree up
    * @param {string} attributeName - The name of the attribute
-   * @returns {string | undefined} Attribute value
+   * @returns {string | null} Attribute value
    */
   function closestAttributeValue ($element, attributeName) {
-    var closestElementWithAttribute = $element.closest('[' + attributeName + ']');
-    if (closestElementWithAttribute) {
-      return closestElementWithAttribute.getAttribute(attributeName)
-    }
+    var $closestElementWithAttribute = $element.closest('[' + attributeName + ']');
+    return $closestElementWithAttribute
+      ? $closestElementWithAttribute.getAttribute(attributeName)
+      : null
   }
 
   /**
@@ -96,6 +99,7 @@
      */
     var flattenObject = function (configObject) {
       // Prepare an empty return object
+      /** @type {Object<string, unknown>} */
       var flattenedObject = {};
 
       /**
@@ -132,6 +136,7 @@
     };
 
     // Start with an empty object as our base
+    /** @type {Object<string, unknown>} */
     var formattedConfigObject = {};
 
     // Loop through each of the remaining passed objects and push their keys
@@ -164,10 +169,14 @@
     if (!configObject || typeof configObject !== 'object') {
       throw new Error('Provide a `configObject` of type "object".')
     }
+
     if (!namespace || typeof namespace !== 'string') {
       throw new Error('Provide a `namespace` of type "string" to filter the `configObject` by.')
     }
+
+    /** @type {Object<string, unknown>} */
     var newObject = {};
+
     for (var key in configObject) {
       // Split the key into parts, using . as our namespace separator
       var keyParts = key.split('.');
@@ -188,14 +197,16 @@
   }
 
   /**
+   * @template {Node} ElementType
    * @callback nodeListIterator
-   * @param {Element} value - The current node being iterated on
+   * @param {ElementType} value - The current node being iterated on
    * @param {number} index - The current index in the iteration
-   * @param {NodeListOf<Element>} nodes - NodeList from querySelectorAll()
+   * @param {NodeListOf<ElementType>} nodes - NodeList from querySelectorAll()
    * @returns {void}
    */
 
-  (function(undefined) {
+  // @ts-nocheck
+  (function (undefined) {
 
   // Detection from https://github.com/Financial-Times/polyfill-service/blob/master/packages/polyfill-library/polyfills/Object/defineProperty/detect.js
   var detect = (
@@ -282,7 +293,8 @@
   })
   .call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
 
-  (function(undefined) {
+  // @ts-nocheck
+  (function (undefined) {
 
   // Detection from https://github.com/Financial-Times/polyfill-service/blob/master/packages/polyfill-library/polyfills/Document/detect.js
   var detect = ("Document" in this);
@@ -308,6 +320,8 @@
 
   })
   .call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
+
+  // @ts-nocheck
 
   (function(undefined) {
 
@@ -422,6 +436,8 @@
   })
   .call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
 
+  // @ts-nocheck
+
   (function(undefined) {
 
     // Detection from https://raw.githubusercontent.com/Financial-Times/polyfill-library/13cf7c340974d128d557580b5e2dafcd1b1192d1/polyfills/Element/prototype/dataset/detect.js
@@ -442,10 +458,10 @@
         var element = this;
         var attributes = this.attributes;
         var map = {};
-    
+
         for (var i = 0; i < attributes.length; i++) {
           var attribute = attributes[i];
-    
+
           // This regex has been edited from the original polyfill, to add
           // support for period (.) separators in data-* attribute names. These
           // are allowed in the HTML spec, but were not covered by the original
@@ -453,11 +469,11 @@
           if (attribute && attribute.name && (/^data-\w[.\w-]*$/).test(attribute.name)) {
             var name = attribute.name;
             var value = attribute.value;
-    
+
             var propName = name.substr(5).replace(/-./g, function (prop) {
               return prop.charAt(1).toUpperCase();
             });
-            
+
             // If this browser supports __defineGetter__ and __defineSetter__,
             // continue using defineProperty. If not (like IE 8 and below), we use
             // a hacky fallback which at least gives an object in the right format
@@ -481,18 +497,19 @@
 
           }
         }
-    
+
         return map;
       }
     });
 
   }).call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
 
-  (function(undefined) {
+  // @ts-nocheck
+  (function (undefined) {
 
       // Detection from https://github.com/mdn/content/blob/cf607d68522cd35ee7670782d3ee3a361eaef2e4/files/en-us/web/javascript/reference/global_objects/string/trim/index.md#polyfill
       var detect = ('trim' in String.prototype);
-      
+
       if (detect) return
 
       // Polyfill from https://github.com/mdn/content/blob/cf607d68522cd35ee7670782d3ee3a361eaef2e4/files/en-us/web/javascript/reference/global_objects/string/trim/index.md#polyfill
@@ -535,7 +552,7 @@
 
     // Empty / whitespace-only strings are considered finite so we need to check
     // the length of the trimmed string as well
-    if (trimmedValue.length > 0 && isFinite(trimmedValue)) {
+    if (trimmedValue.length > 0 && isFinite(Number(trimmedValue))) {
       return Number(trimmedValue)
     }
 
@@ -551,6 +568,7 @@
    * @returns {Object<string, unknown>} Normalised dataset
    */
   function normaliseDataset (dataset) {
+    /** @type {Object<string, unknown>} */
     var out = {};
 
     for (var key in dataset) {
@@ -595,17 +613,17 @@
     }
 
     // If the `count` option is set, determine which plural suffix is needed and
-    // change the lookupKey to match. We check to see if it's undefined instead of
+    // change the lookupKey to match. We check to see if it's numeric instead of
     // falsy, as this could legitimately be 0.
-    if (options && typeof options.count !== 'undefined') {
+    if (options && typeof options.count === 'number') {
       // Get the plural suffix
       lookupKey = lookupKey + '.' + this.getPluralSuffix(lookupKey, options.count);
     }
 
-    if (lookupKey in this.translations) {
-      // Fetch the translation string for that lookup key
-      var translationString = this.translations[lookupKey];
+    // Fetch the translation string for that lookup key
+    var translationString = this.translations[lookupKey];
 
+    if (typeof translationString === 'string') {
       // Check for ${} placeholders in the translation string
       if (translationString.match(/%{(.\S+)}/)) {
         if (!options) {
@@ -632,32 +650,46 @@
    * @returns {string} The translation string to output, with ${} placeholders replaced
    */
   I18n.prototype.replacePlaceholders = function (translationString, options) {
+    /** @type {Intl.NumberFormat | undefined} */
     var formatter;
 
     if (this.hasIntlNumberFormatSupport()) {
       formatter = new Intl.NumberFormat(this.locale);
     }
 
-    return translationString.replace(/%{(.\S+)}/g, function (placeholderWithBraces, placeholderKey) {
-      if (Object.prototype.hasOwnProperty.call(options, placeholderKey)) {
-        var placeholderValue = options[placeholderKey];
+    return translationString.replace(
+      /%{(.\S+)}/g,
 
-        // If a user has passed `false` as the value for the placeholder
-        // treat it as though the value should not be displayed
-        if (placeholderValue === false) {
-          return ''
+      /**
+       * Replace translation string placeholders
+       *
+       * @param {string} placeholderWithBraces - Placeholder with braces
+       * @param {string} placeholderKey - Placeholder key
+       * @returns {string} Placeholder value
+       */
+      function (placeholderWithBraces, placeholderKey) {
+        if (Object.prototype.hasOwnProperty.call(options, placeholderKey)) {
+          var placeholderValue = options[placeholderKey];
+
+          // If a user has passed `false` as the value for the placeholder
+          // treat it as though the value should not be displayed
+          if (placeholderValue === false || (
+            typeof placeholderValue !== 'number' &&
+            typeof placeholderValue !== 'string')
+          ) {
+            return ''
+          }
+
+          // If the placeholder's value is a number, localise the number formatting
+          if (typeof placeholderValue === 'number') {
+            return formatter ? formatter.format(placeholderValue) : placeholderValue.toString()
+          }
+
+          return placeholderValue
+        } else {
+          throw new Error('i18n: no data found to replace ' + placeholderWithBraces + ' placeholder in string')
         }
-
-        // If the placeholder's value is a number, localise the number formatting
-        if (typeof placeholderValue === 'number' && formatter) {
-          return formatter.format(placeholderValue)
-        }
-
-        return placeholderValue
-      } else {
-        throw new Error('i18n: no data found to replace ' + placeholderWithBraces + ' placeholder in string')
-      }
-    })
+      })
   };
 
   /**
@@ -773,7 +805,7 @@
    * regardless of region. There are exceptions, however, (e.g. Portuguese) so
    * this searches by both the full and shortened locale codes, just to be sure.
    *
-   * @returns {PluralRuleName | undefined} The name of the pluralisation rule to use (a key for one
+   * @returns {string | undefined} The name of the pluralisation rule to use (a key for one
    *   of the functions in this.pluralRules)
    */
   I18n.prototype.getPluralRulesForLocale = function () {
@@ -824,7 +856,7 @@
    * Spanish: European Portuguese (pt-PT), Italian (it), Spanish (es)
    * Welsh: Welsh (cy)
    *
-   * @type {Object<PluralRuleName, string[]>}
+   * @type {Object<string, string[]>}
    */
   I18n.pluralRulesMap = {
     arabic: ['ar'],
@@ -913,12 +945,6 @@
   };
 
   /**
-   * Supported languages for plural rules
-   *
-   * @typedef {'arabic' | 'chinese' | 'french' | 'german' | 'irish' | 'russian' | 'scottish' | 'spanish' | 'welsh'} PluralRuleName
-   */
-
-  /**
    * Plural rule category mnemonic tags
    *
    * @typedef {'zero' | 'one' | 'two' | 'few' | 'many' | 'other'} PluralRule
@@ -939,7 +965,8 @@
    * @property {string} [many] - Plural form used for many
    */
 
-  (function(undefined) {
+  // @ts-nocheck
+  (function (undefined) {
 
       // Detection from https://github.com/Financial-Times/polyfill-library/blob/v3.111.0/polyfills/Date/now/detect.js
       var detect = ('Date' in self && 'now' in self.Date && 'getTime' in self.Date.prototype);
@@ -953,7 +980,8 @@
 
   }).call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
 
-  (function(undefined) {
+  // @ts-nocheck
+  (function (undefined) {
 
       // Detection from https://raw.githubusercontent.com/Financial-Times/polyfill-service/master/packages/polyfill-library/polyfills/DOMTokenList/detect.js
       var detect = (
@@ -1218,6 +1246,8 @@
 
   }).call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
 
+  // @ts-nocheck
+
   (function(undefined) {
 
       // Detection from https://raw.githubusercontent.com/Financial-Times/polyfill-service/8717a9e04ac7aff99b4980fbedead98036b0929a/packages/polyfill-library/polyfills/Element/prototype/classList/detect.js
@@ -1308,7 +1338,8 @@
 
   }).call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
 
-  (function(undefined) {
+  // @ts-nocheck
+  (function (undefined) {
 
   // Detection from https://github.com/Financial-Times/polyfill-service/blob/master/packages/polyfill-library/polyfills/Window/detect.js
   var detect = ('Window' in this);
@@ -1328,6 +1359,8 @@
 
   })
   .call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
+
+  // @ts-nocheck
 
   (function(undefined) {
 
@@ -1578,6 +1611,8 @@
   })
   .call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
 
+  // @ts-nocheck
+
   (function(undefined) {
     // Detection from https://github.com/Financial-Times/polyfill-service/blob/master/packages/polyfill-library/polyfills/Function/prototype/bind/detect.js
     var detect = 'bind' in Function.prototype;
@@ -1781,11 +1816,16 @@
    * of the available characters/words has been entered.
    *
    * @class
-   * @param {HTMLElement} $module - HTML element to use for character count
+   * @param {Element} $module - HTML element to use for character count
    * @param {CharacterCountConfig} [config] - Character count config
    */
   function CharacterCount ($module, config) {
-    if (!$module) {
+    if (!($module instanceof HTMLElement)) {
+      return this
+    }
+
+    var $textarea = $module.querySelector('.govuk-js-character-count');
+    if (!($textarea instanceof HTMLTextAreaElement || $textarea instanceof HTMLInputElement)) {
       return this
     }
 
@@ -1811,6 +1851,7 @@
       };
     }
 
+    /** @type {CharacterCountConfig} */
     this.config = mergeConfigs(
       defaultConfig,
       config || {},
@@ -1824,19 +1865,21 @@
     });
 
     // Determine the limit attribute (characters or words)
-    if (this.config.maxwords) {
+    if ('maxwords' in this.config && this.config.maxwords) {
       this.maxLength = this.config.maxwords;
-    } else if (this.config.maxlength) {
+    } else if ('maxlength' in this.config && this.config.maxlength) {
       this.maxLength = this.config.maxlength;
     } else {
       return
     }
 
     this.$module = $module;
-    this.$textarea = $module.querySelector('.govuk-js-character-count');
+    this.$textarea = $textarea;
     this.$visibleCountMessage = null;
     this.$screenReaderCountMessage = null;
+
     this.lastInputTimestamp = null;
+    this.lastInputValue = '';
   }
 
   /**
@@ -1844,14 +1887,17 @@
    */
   CharacterCount.prototype.init = function () {
     // Check that required elements are present
-    if (!this.$textarea) {
+    if (!this.$module || !this.$textarea) {
       return
     }
 
     var $textarea = this.$textarea;
     var $textareaDescription = document.getElementById($textarea.id + '-info');
+    if (!$textareaDescription) {
+      return
+    }
 
-    // Inject a decription for the textarea if none is present already
+    // Inject a description for the textarea if none is present already
     // for when the component was rendered with no maxlength, maxwords
     // nor custom textareaDescriptionText
     if ($textareaDescription.innerText.match(/^\s*$/)) {
@@ -1892,11 +1938,11 @@
     // state of the character count is not restored until *after* the
     // DOMContentLoaded event is fired, so we need to manually update it after the
     // pageshow event in browsers that support it.
-    if ('onpageshow' in window) {
-      window.addEventListener('pageshow', this.updateCountMessage.bind(this));
-    } else {
-      window.addEventListener('DOMContentLoaded', this.updateCountMessage.bind(this));
-    }
+    window.addEventListener(
+      'onpageshow' in window ? 'pageshow' : 'DOMContentLoaded',
+      this.updateCountMessage.bind(this)
+    );
+
     this.updateCountMessage();
   };
 
@@ -1961,9 +2007,8 @@
    * Update count message if textarea value has changed
    */
   CharacterCount.prototype.updateIfValueChanged = function () {
-    if (!this.$textarea.oldValue) this.$textarea.oldValue = '';
-    if (this.$textarea.value !== this.$textarea.oldValue) {
-      this.$textarea.oldValue = this.$textarea.value;
+    if (this.$textarea.value !== this.lastInputValue) {
+      this.lastInputValue = this.$textarea.value;
       this.updateCountMessage();
     }
   };
@@ -2021,7 +2066,7 @@
     if (this.isOverThreshold()) {
       $screenReaderCountMessage.removeAttribute('aria-hidden');
     } else {
-      $screenReaderCountMessage.setAttribute('aria-hidden', true);
+      $screenReaderCountMessage.setAttribute('aria-hidden', 'true');
     }
 
     // Update message
@@ -2036,7 +2081,7 @@
    * @returns {number} the number of characters (or words) in the text
    */
   CharacterCount.prototype.count = function (text) {
-    if (this.config.maxwords) {
+    if ('maxwords' in this.config && this.config.maxwords) {
       var tokens = text.match(/\S+/g) || []; // Matches consecutive non-whitespace chars
       return tokens.length
     } else {
@@ -2052,7 +2097,7 @@
   CharacterCount.prototype.getCountMessage = function () {
     var remainingNumber = this.maxLength - this.count(this.$textarea.value);
 
-    var countType = this.config.maxwords ? 'words' : 'characters';
+    var countType = 'maxwords' in this.config && this.config.maxwords ? 'words' : 'characters';
     return this.formatCountMessage(remainingNumber, countType)
   };
 
@@ -2112,10 +2157,10 @@
    *
    * @typedef {object} CharacterCountConfigWithMaxLength
    * @property {number} [maxlength] - The maximum number of characters.
-   *  If maxwords is provided, the maxlength option will be ignored.
+   *   If maxwords is provided, the maxlength option will be ignored.
    * @property {number} [threshold = 0] - The percentage value of the limit at
-   *  which point the count message is displayed. If this attribute is set, the
-   *  count message will be hidden by default.
+   *   which point the count message is displayed. If this attribute is set, the
+   *   count message will be hidden by default.
    * @property {CharacterCountTranslations} [i18n = CHARACTER_COUNT_TRANSLATIONS] - See constant {@link CHARACTER_COUNT_TRANSLATIONS}
    */
 
@@ -2124,10 +2169,10 @@
    *
    * @typedef {object} CharacterCountConfigWithMaxWords
    * @property {number} [maxwords] - The maximum number of words. If maxwords is
-   *  provided, the maxlength option will be ignored.
+   *   provided, the maxlength option will be ignored.
    * @property {number} [threshold = 0] - The percentage value of the limit at
-   *  which point the count message is displayed. If this attribute is set, the
-   *  count message will be hidden by default.
+   *   which point the count message is displayed. If this attribute is set, the
+   *   count message will be hidden by default.
    * @property {CharacterCountTranslations} [i18n = CHARACTER_COUNT_TRANSLATIONS] - See constant {@link CHARACTER_COUNT_TRANSLATIONS}
    */
 

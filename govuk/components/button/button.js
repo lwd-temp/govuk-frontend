@@ -35,6 +35,7 @@
      */
     var flattenObject = function (configObject) {
       // Prepare an empty return object
+      /** @type {Object<string, unknown>} */
       var flattenedObject = {};
 
       /**
@@ -71,6 +72,7 @@
     };
 
     // Start with an empty object as our base
+    /** @type {Object<string, unknown>} */
     var formattedConfigObject = {};
 
     // Loop through each of the remaining passed objects and push their keys
@@ -89,14 +91,16 @@
   }
 
   /**
+   * @template {Node} ElementType
    * @callback nodeListIterator
-   * @param {Element} value - The current node being iterated on
+   * @param {ElementType} value - The current node being iterated on
    * @param {number} index - The current index in the iteration
-   * @param {NodeListOf<Element>} nodes - NodeList from querySelectorAll()
+   * @param {NodeListOf<ElementType>} nodes - NodeList from querySelectorAll()
    * @returns {void}
    */
 
-  (function(undefined) {
+  // @ts-nocheck
+  (function (undefined) {
 
   // Detection from https://github.com/Financial-Times/polyfill-service/blob/master/packages/polyfill-library/polyfills/Object/defineProperty/detect.js
   var detect = (
@@ -183,7 +187,8 @@
   })
   .call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
 
-  (function(undefined) {
+  // @ts-nocheck
+  (function (undefined) {
 
   // Detection from https://github.com/Financial-Times/polyfill-service/blob/master/packages/polyfill-library/polyfills/Document/detect.js
   var detect = ("Document" in this);
@@ -209,6 +214,8 @@
 
   })
   .call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
+
+  // @ts-nocheck
 
   (function(undefined) {
 
@@ -323,6 +330,8 @@
   })
   .call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
 
+  // @ts-nocheck
+
   (function(undefined) {
 
     // Detection from https://raw.githubusercontent.com/Financial-Times/polyfill-library/13cf7c340974d128d557580b5e2dafcd1b1192d1/polyfills/Element/prototype/dataset/detect.js
@@ -343,10 +352,10 @@
         var element = this;
         var attributes = this.attributes;
         var map = {};
-    
+
         for (var i = 0; i < attributes.length; i++) {
           var attribute = attributes[i];
-    
+
           // This regex has been edited from the original polyfill, to add
           // support for period (.) separators in data-* attribute names. These
           // are allowed in the HTML spec, but were not covered by the original
@@ -354,11 +363,11 @@
           if (attribute && attribute.name && (/^data-\w[.\w-]*$/).test(attribute.name)) {
             var name = attribute.name;
             var value = attribute.value;
-    
+
             var propName = name.substr(5).replace(/-./g, function (prop) {
               return prop.charAt(1).toUpperCase();
             });
-            
+
             // If this browser supports __defineGetter__ and __defineSetter__,
             // continue using defineProperty. If not (like IE 8 and below), we use
             // a hacky fallback which at least gives an object in the right format
@@ -382,18 +391,19 @@
 
           }
         }
-    
+
         return map;
       }
     });
 
   }).call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
 
-  (function(undefined) {
+  // @ts-nocheck
+  (function (undefined) {
 
       // Detection from https://github.com/mdn/content/blob/cf607d68522cd35ee7670782d3ee3a361eaef2e4/files/en-us/web/javascript/reference/global_objects/string/trim/index.md#polyfill
       var detect = ('trim' in String.prototype);
-      
+
       if (detect) return
 
       // Polyfill from https://github.com/mdn/content/blob/cf607d68522cd35ee7670782d3ee3a361eaef2e4/files/en-us/web/javascript/reference/global_objects/string/trim/index.md#polyfill
@@ -436,7 +446,7 @@
 
     // Empty / whitespace-only strings are considered finite so we need to check
     // the length of the trimmed string as well
-    if (trimmedValue.length > 0 && isFinite(trimmedValue)) {
+    if (trimmedValue.length > 0 && isFinite(Number(trimmedValue))) {
       return Number(trimmedValue)
     }
 
@@ -452,6 +462,7 @@
    * @returns {Object<string, unknown>} Normalised dataset
    */
   function normaliseDataset (dataset) {
+    /** @type {Object<string, unknown>} */
     var out = {};
 
     for (var key in dataset) {
@@ -461,7 +472,8 @@
     return out
   }
 
-  (function(undefined) {
+  // @ts-nocheck
+  (function (undefined) {
 
   // Detection from https://github.com/Financial-Times/polyfill-service/blob/master/packages/polyfill-library/polyfills/Window/detect.js
   var detect = ('Window' in this);
@@ -481,6 +493,8 @@
 
   })
   .call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
+
+  // @ts-nocheck
 
   (function(undefined) {
 
@@ -731,6 +745,8 @@
   })
   .call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
 
+  // @ts-nocheck
+
   (function(undefined) {
     // Detection from https://github.com/Financial-Times/polyfill-service/blob/master/packages/polyfill-library/polyfills/Function/prototype/bind/detect.js
     var detect = 'bind' in Function.prototype;
@@ -898,11 +914,11 @@
    * JavaScript enhancements for the Button component
    *
    * @class
-   * @param {HTMLElement} $module - HTML element to use for button
+   * @param {Element} $module - HTML element to use for button
    * @param {ButtonConfig} [config] - Button config
    */
   function Button ($module, config) {
-    if (!$module) {
+    if (!($module instanceof HTMLElement)) {
       return this
     }
 
@@ -912,6 +928,8 @@
     var defaultConfig = {
       preventDoubleClick: false
     };
+
+    /** @type {ButtonConfig} */
     this.config = mergeConfigs(
       defaultConfig,
       config || {},
@@ -923,6 +941,7 @@
    * Initialise component
    */
   Button.prototype.init = function () {
+    // Check that required elements are present
     if (!this.$module) {
       return
     }
@@ -944,7 +963,13 @@
   Button.prototype.handleKeyDown = function (event) {
     var $target = event.target;
 
-    if ($target.getAttribute('role') === 'button' && event.keyCode === KEY_SPACE) {
+    // Handle space bar only
+    if (event.keyCode !== KEY_SPACE) {
+      return
+    }
+
+    // Handle elements with [role="button"] only
+    if ($target instanceof HTMLElement && $target.getAttribute('role') === 'button') {
       event.preventDefault(); // prevent the page from scrolling
       $target.click();
     }
@@ -981,9 +1006,8 @@
    * Button config
    *
    * @typedef {object} ButtonConfig
-   * @property {boolean} [preventDoubleClick = false] -
-   *  Prevent accidental double clicks on submit buttons from submitting forms
-   *  multiple times.
+   * @property {boolean} [preventDoubleClick = false] - Prevent accidental double
+   *   clicks on submit buttons from submitting forms multiple times.
    */
 
   return Button;

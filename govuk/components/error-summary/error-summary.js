@@ -35,6 +35,7 @@
      */
     var flattenObject = function (configObject) {
       // Prepare an empty return object
+      /** @type {Object<string, unknown>} */
       var flattenedObject = {};
 
       /**
@@ -71,6 +72,7 @@
     };
 
     // Start with an empty object as our base
+    /** @type {Object<string, unknown>} */
     var formattedConfigObject = {};
 
     // Loop through each of the remaining passed objects and push their keys
@@ -89,14 +91,16 @@
   }
 
   /**
+   * @template {Node} ElementType
    * @callback nodeListIterator
-   * @param {Element} value - The current node being iterated on
+   * @param {ElementType} value - The current node being iterated on
    * @param {number} index - The current index in the iteration
-   * @param {NodeListOf<Element>} nodes - NodeList from querySelectorAll()
+   * @param {NodeListOf<ElementType>} nodes - NodeList from querySelectorAll()
    * @returns {void}
    */
 
-  (function(undefined) {
+  // @ts-nocheck
+  (function (undefined) {
 
   // Detection from https://github.com/Financial-Times/polyfill-service/blob/master/packages/polyfill-library/polyfills/Object/defineProperty/detect.js
   var detect = (
@@ -183,7 +187,8 @@
   })
   .call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
 
-  (function(undefined) {
+  // @ts-nocheck
+  (function (undefined) {
 
   // Detection from https://github.com/Financial-Times/polyfill-service/blob/master/packages/polyfill-library/polyfills/Document/detect.js
   var detect = ("Document" in this);
@@ -209,6 +214,8 @@
 
   })
   .call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
+
+  // @ts-nocheck
 
   (function(undefined) {
 
@@ -323,6 +330,8 @@
   })
   .call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
 
+  // @ts-nocheck
+
   (function(undefined) {
 
     // Detection from https://raw.githubusercontent.com/Financial-Times/polyfill-library/13cf7c340974d128d557580b5e2dafcd1b1192d1/polyfills/Element/prototype/dataset/detect.js
@@ -343,10 +352,10 @@
         var element = this;
         var attributes = this.attributes;
         var map = {};
-    
+
         for (var i = 0; i < attributes.length; i++) {
           var attribute = attributes[i];
-    
+
           // This regex has been edited from the original polyfill, to add
           // support for period (.) separators in data-* attribute names. These
           // are allowed in the HTML spec, but were not covered by the original
@@ -354,11 +363,11 @@
           if (attribute && attribute.name && (/^data-\w[.\w-]*$/).test(attribute.name)) {
             var name = attribute.name;
             var value = attribute.value;
-    
+
             var propName = name.substr(5).replace(/-./g, function (prop) {
               return prop.charAt(1).toUpperCase();
             });
-            
+
             // If this browser supports __defineGetter__ and __defineSetter__,
             // continue using defineProperty. If not (like IE 8 and below), we use
             // a hacky fallback which at least gives an object in the right format
@@ -382,18 +391,19 @@
 
           }
         }
-    
+
         return map;
       }
     });
 
   }).call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
 
-  (function(undefined) {
+  // @ts-nocheck
+  (function (undefined) {
 
       // Detection from https://github.com/mdn/content/blob/cf607d68522cd35ee7670782d3ee3a361eaef2e4/files/en-us/web/javascript/reference/global_objects/string/trim/index.md#polyfill
       var detect = ('trim' in String.prototype);
-      
+
       if (detect) return
 
       // Polyfill from https://github.com/mdn/content/blob/cf607d68522cd35ee7670782d3ee3a361eaef2e4/files/en-us/web/javascript/reference/global_objects/string/trim/index.md#polyfill
@@ -436,7 +446,7 @@
 
     // Empty / whitespace-only strings are considered finite so we need to check
     // the length of the trimmed string as well
-    if (trimmedValue.length > 0 && isFinite(trimmedValue)) {
+    if (trimmedValue.length > 0 && isFinite(Number(trimmedValue))) {
       return Number(trimmedValue)
     }
 
@@ -452,6 +462,7 @@
    * @returns {Object<string, unknown>} Normalised dataset
    */
   function normaliseDataset (dataset) {
+    /** @type {Object<string, unknown>} */
     var out = {};
 
     for (var key in dataset) {
@@ -461,7 +472,8 @@
     return out
   }
 
-  (function(undefined) {
+  // @ts-nocheck
+  (function (undefined) {
 
     // Detection from https://raw.githubusercontent.com/Financial-Times/polyfill-service/1f3c09b402f65bf6e393f933a15ba63f1b86ef1f/packages/polyfill-library/polyfills/Element/prototype/matches/detect.js
     var detect = (
@@ -484,6 +496,8 @@
     };
 
   }).call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
+
+  // @ts-nocheck
 
   (function(undefined) {
 
@@ -508,7 +522,8 @@
 
   }).call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
 
-  (function(undefined) {
+  // @ts-nocheck
+  (function (undefined) {
 
   // Detection from https://github.com/Financial-Times/polyfill-service/blob/master/packages/polyfill-library/polyfills/Window/detect.js
   var detect = ('Window' in this);
@@ -528,6 +543,8 @@
 
   })
   .call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
+
+  // @ts-nocheck
 
   (function(undefined) {
 
@@ -778,6 +795,8 @@
   })
   .call('object' === typeof window && window || 'object' === typeof self && self || 'object' === typeof global && global || {});
 
+  // @ts-nocheck
+
   (function(undefined) {
     // Detection from https://github.com/Financial-Times/polyfill-service/blob/master/packages/polyfill-library/polyfills/Function/prototype/bind/detect.js
     var detect = 'bind' in Function.prototype;
@@ -944,7 +963,7 @@
    * Takes focus on initialisation for accessible announcement, unless disabled in configuration.
    *
    * @class
-   * @param {HTMLElement} $module - HTML element to use for error summary
+   * @param {Element} $module - HTML element to use for error summary
    * @param {ErrorSummaryConfig} [config] - Error summary config
    */
   function ErrorSummary ($module, config) {
@@ -955,7 +974,7 @@
     // To avoid breaking further JavaScript initialisation
     // we need to safeguard against this so things keep
     // working the same now we read the elements data attributes
-    if (!$module) {
+    if (!($module instanceof HTMLElement)) {
       // Little safety in case code gets ported as-is
       // into and ES6 class constructor, where the return value matters
       return this
@@ -966,6 +985,8 @@
     var defaultConfig = {
       disableAutoFocus: false
     };
+
+    /** @type {ErrorSummaryConfig} */
     this.config = mergeConfigs(
       defaultConfig,
       config || {},
@@ -977,10 +998,12 @@
    * Initialise component
    */
   ErrorSummary.prototype.init = function () {
-    var $module = this.$module;
-    if (!$module) {
+    // Check that required elements are present
+    if (!this.$module) {
       return
     }
+
+    var $module = this.$module;
 
     this.setFocus();
     $module.addEventListener('click', this.handleClick.bind(this));
@@ -1039,11 +1062,15 @@
    */
   ErrorSummary.prototype.focusTarget = function ($target) {
     // If the element that was clicked was not a link, return early
-    if ($target.tagName !== 'A' || $target.href === false) {
+    if (!($target instanceof HTMLAnchorElement)) {
       return false
     }
 
     var inputId = this.getFragmentFromUrl($target.href);
+    if (!inputId) {
+      return false
+    }
+
     var $input = document.getElementById(inputId);
     if (!$input) {
       return false
@@ -1070,11 +1097,11 @@
    * the hash.
    *
    * @param {string} url - URL
-   * @returns {string} Fragment from URL, without the hash
+   * @returns {string | undefined} Fragment from URL, without the hash
    */
   ErrorSummary.prototype.getFragmentFromUrl = function (url) {
     if (url.indexOf('#') === -1) {
-      return false
+      return undefined
     }
 
     return url.split('#').pop()
@@ -1091,9 +1118,9 @@
    * - The first `<label>` that is associated with the input using for="inputId"
    * - The closest parent `<label>`
    *
-   * @param {HTMLElement} $input - The input
-   * @returns {HTMLElement} Associated legend or label, or null if no associated
-   *                        legend or label can be found
+   * @param {Element} $input - The input
+   * @returns {Element | null} Associated legend or label, or null if no associated
+   *   legend or label can be found
    */
   ErrorSummary.prototype.getAssociatedLegendOrLabel = function ($input) {
     var $fieldset = $input.closest('fieldset');
@@ -1106,7 +1133,7 @@
 
         // If the input type is radio or checkbox, always use the legend if there
         // is one.
-        if ($input.type === 'checkbox' || $input.type === 'radio') {
+        if ($input instanceof HTMLInputElement && ($input.type === 'checkbox' || $input.type === 'radio')) {
           return $candidateLegend
         }
 
@@ -1139,8 +1166,8 @@
    * Error summary config
    *
    * @typedef {object} ErrorSummaryConfig
-   * @property {boolean} [disableAutoFocus = false] -
-   *  If set to `true` the error summary will not be focussed when the page loads.
+   * @property {boolean} [disableAutoFocus = false] - If set to `true` the error
+   *   summary will not be focussed when the page loads.
    */
 
   return ErrorSummary;
