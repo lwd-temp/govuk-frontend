@@ -114,29 +114,14 @@
 ///
 /// @access public
 
-@mixin govuk-typography-responsive($size, $override-line-height: false, $important: false) {
-  @if type-of($size) == map {
-    @each $breakpoint, $value in $size {
-      $font-map: map-get($govuk-typography-scale, $value);
-      $breakpoint-map: map-get($font-map, $breakpoint);
-      $font-size: map-get($breakpoint-map, "font-size");
-      $font-size-rem: govuk-px-to-rem($font-size);
+@mixin govuk-typography-responsive($size, $override-line-height: false, $important: false, $responsive-scale: true) {
+  @if not map-has-key($govuk-typography-scale, $size) {
+    @error "Unknown font size `#{$size}` - expected a point from the typography scale.";
+  }
 
-      @if $breakpoint == "null" {
-        font-size: $font-size-rem;
-      } @else {
-        @include govuk-media-query($from: $breakpoint) {
-          font-size: $font-size-rem;
-        }
-      }
-    }
-  } @else {
-    @if not map-has-key($govuk-typography-scale, $size) {
-      @error "Unknown font size `#{$size}` - expected a point from the typography scale.";
-    }
+  $font-map: map-get($govuk-typography-scale, $size);
 
-    $font-map: map-get($govuk-typography-scale, $size);
-
+  @if $responsive-scale {
     @each $breakpoint, $breakpoint-map in $font-map {
       $font-size: map-get($breakpoint-map, "font-size");
       $font-size-rem: govuk-px-to-rem($font-size);
@@ -168,6 +153,18 @@
         }
       }
     }
+  } @else {
+    $breakpoint-map: map-get($font-map, "tablet");
+    $font-size: map-get($breakpoint-map, "font-size");
+    $font-size-rem: govuk-px-to-rem($font-size);
+
+    $line-height: _govuk-line-height(
+      $line-height: if($override-line-height, $override-line-height, map-get($breakpoint-map, "line-height")),
+      $font-size: $font-size
+    );
+
+    font-size: $font-size-rem;
+    line-height: $line-height;
   }
 }
 
@@ -185,8 +182,17 @@
 ///
 /// @access public
 
-@mixin govuk-font($size, $weight: regular, $tabular: false, $line-height: false) {
-  @include govuk-typography-common;
+@mixin govuk-font(
+  $size,
+  $weight: regular,
+  $tabular: false,
+  $line-height: false,
+  $responsive: true,
+  $typography-common: true
+) {
+  @if $typography-common {
+    @include govuk-typography-common;
+  }
 
   @if $tabular {
     font-feature-settings: "tnum" 1;
@@ -204,6 +210,6 @@
   }
 
   @if $size {
-    @include govuk-typography-responsive($size, $override-line-height: $line-height);
+    @include govuk-typography-responsive($size, $override-line-height: $line-height, $responsive-scale: $responsive);
   }
 }
