@@ -103,8 +103,8 @@
 ///   )
 /// );
 ///
-/// @param {Number} $size - Point from the spacing scale (the size as it would
-///   appear on tablet and above)
+/// @param {Number | Map} $size - Point from the spacing scale (the size as it would
+///   appear on tablet and above) or a map of points by breakpoint
 /// @param {Number} $override-line-height [false] - Non responsive custom line
 ///   height. Omit to use the line height from the font map.
 /// @param {Boolean} $important [false] - Whether to mark declarations as
@@ -115,40 +115,57 @@
 /// @access public
 
 @mixin govuk-typography-responsive($size, $override-line-height: false, $important: false) {
-  @if not map-has-key($govuk-typography-scale, $size) {
-    @error "Unknown font size `#{$size}` - expected a point from the typography scale.";
-  }
+  @if type-of($size) == map {
+    @each $breakpoint, $value in $size {
+      $font-map: map-get($govuk-typography-scale, $value);
+      $breakpoint-map: map-get($font-map, $breakpoint);
+      $font-size: map-get($breakpoint-map, "font-size");
+      $font-size-rem: govuk-px-to-rem($font-size);
 
-  $font-map: map-get($govuk-typography-scale, $size);
-
-  @each $breakpoint, $breakpoint-map in $font-map {
-    $font-size: map-get($breakpoint-map, "font-size");
-    $font-size-rem: govuk-px-to-rem($font-size);
-
-    $line-height: _govuk-line-height(
-      $line-height: if($override-line-height, $override-line-height, map-get($breakpoint-map, "line-height")),
-      $font-size: $font-size
-    );
-
-    // Mark rules as !important if $important is true - this will result in
-    // these variables becoming strings, so this needs to happen *after* they
-    // are used in calculations
-    $font-size: $font-size if($important, !important, null);
-    $font-size-rem: $font-size-rem if($important, !important, null);
-    $line-height: $line-height if($important, !important, null);
-
-    @if not $breakpoint {
-      font-size: $font-size-rem;
-      line-height: $line-height;
-    } @else if $breakpoint == "print" {
-      @include govuk-media-query($media-type: print) {
-        font-size: $font-size;
-        line-height: $line-height;
+      @if $breakpoint == "null" {
+        font-size: $font-size-rem;
+      } @else {
+        @include govuk-media-query($from: $breakpoint) {
+          font-size: $font-size-rem;
+        }
       }
-    } @else {
-      @include govuk-media-query($from: $breakpoint) {
+    }
+  } @else {
+    @if not map-has-key($govuk-typography-scale, $size) {
+      @error "Unknown font size `#{$size}` - expected a point from the typography scale.";
+    }
+
+    $font-map: map-get($govuk-typography-scale, $size);
+
+    @each $breakpoint, $breakpoint-map in $font-map {
+      $font-size: map-get($breakpoint-map, "font-size");
+      $font-size-rem: govuk-px-to-rem($font-size);
+
+      $line-height: _govuk-line-height(
+        $line-height: if($override-line-height, $override-line-height, map-get($breakpoint-map, "line-height")),
+        $font-size: $font-size
+      );
+
+      // Mark rules as !important if $important is true - this will result in
+      // these variables becoming strings, so this needs to happen *after* they
+      // are used in calculations
+      $font-size: $font-size if($important, !important, null);
+      $font-size-rem: $font-size-rem if($important, !important, null);
+      $line-height: $line-height if($important, !important, null);
+
+      @if not $breakpoint {
         font-size: $font-size-rem;
         line-height: $line-height;
+      } @else if $breakpoint == "print" {
+        @include govuk-media-query($media-type: print) {
+          font-size: $font-size;
+          line-height: $line-height;
+        }
+      } @else {
+        @include govuk-media-query($from: $breakpoint) {
+          font-size: $font-size-rem;
+          line-height: $line-height;
+        }
       }
     }
   }
@@ -156,8 +173,9 @@
 
 /// Font helper
 ///
-/// @param {Number | Boolean} $size Point from the spacing scale (the size as it
-///   would appear on tablet and above). Use `false` to avoid setting a size.
+/// @param {Number | Map | Boolean} $size Point from the spacing scale (the size
+///   as it would appear on tablet and above) or a map of points per size.
+///   Use `false` to avoid setting a size.
 /// @param {String} $weight [regular] - Weight: `bold` or `regular`
 /// @param {Boolean} $tabular [false] - Whether to use tabular numbers or not
 /// @param {Number} $line-height [false] - Line-height, if overriding the
