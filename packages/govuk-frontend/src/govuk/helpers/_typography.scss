@@ -114,14 +114,48 @@
 ///
 /// @access public
 
-@mixin govuk-typography-responsive($size, $override-line-height: false, $important: false, $responsive-scale: true) {
+@mixin govuk-typography-responsive($size, $tablet-size: false, $override-line-height: false, $important: false) {
   @if not map-has-key($govuk-typography-scale, $size) {
     @error "Unknown font size `#{$size}` - expected a point from the typography scale.";
   }
 
   $font-map: map-get($govuk-typography-scale, $size);
 
-  @if $responsive-scale {
+  @if $tablet-size {
+    $tablet-font-map: map-get($govuk-typography-scale, $tablet-size);
+
+    $mobile-map: map-get($font-map, "tablet");
+    $tablet-map: map-get($tablet-font-map, "tablet");
+    $print-map: map-get($font-map, "print");
+
+    $mobile-font-size: map-get($mobile-map, "font-size");
+    $tablet-font-size: map-get($tablet-map, "font-size");
+
+    $mobile-font-size-rem: govuk-px-to-rem($mobile-font-size);
+    $tablet-font-size-rem: govuk-px-to-rem($tablet-font-size);
+
+    $mobile-line-height: _govuk-line-height(
+      $line-height: if($override-line-height, $override-line-height, map-get($mobile-map, "line-height")),
+      $font-size: $mobile-font-size
+    );
+    $tablet-line-height: _govuk-line-height(
+      $line-height: map-get($mobile-map, "line-height"),
+      $font-size: $mobile-font-size
+    );
+
+    @include govuk-media-query($media-type: print) {
+      font-size: map-get($print-map, "font-size");
+      line-height: map-get($print-map, "line-height");
+    }
+
+    @include govuk-media-query($from: tablet) {
+      font-size: $tablet-font-size-rem;
+      line-height: $tablet-line-height;
+    }
+
+    font-size: $mobile-font-size-rem;
+    line-height: $mobile-line-height;
+  } @else {
     @each $breakpoint, $breakpoint-map in $font-map {
       $font-size: map-get($breakpoint-map, "font-size");
       $font-size-rem: govuk-px-to-rem($font-size);
@@ -153,18 +187,6 @@
         }
       }
     }
-  } @else {
-    $breakpoint-map: map-get($font-map, "tablet");
-    $font-size: map-get($breakpoint-map, "font-size");
-    $font-size-rem: govuk-px-to-rem($font-size);
-
-    $line-height: _govuk-line-height(
-      $line-height: if($override-line-height, $override-line-height, map-get($breakpoint-map, "line-height")),
-      $font-size: $font-size
-    );
-
-    font-size: $font-size-rem;
-    line-height: $line-height;
   }
 }
 
@@ -182,17 +204,8 @@
 ///
 /// @access public
 
-@mixin govuk-font(
-  $size,
-  $weight: regular,
-  $tabular: false,
-  $line-height: false,
-  $responsive: true,
-  $typography-common: true
-) {
-  @if $typography-common {
-    @include govuk-typography-common;
-  }
+@mixin govuk-font($size, $tablet: false, $weight: regular, $tabular: false, $line-height: false) {
+  @include govuk-typography-common;
 
   @if $tabular {
     font-feature-settings: "tnum" 1;
@@ -210,6 +223,6 @@
   }
 
   @if $size {
-    @include govuk-typography-responsive($size, $override-line-height: $line-height, $responsive-scale: $responsive);
+    @include govuk-typography-responsive($size, $tablet-size: $tablet, $override-line-height: $line-height);
   }
 }
