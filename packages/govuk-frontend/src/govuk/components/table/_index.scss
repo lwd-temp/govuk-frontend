@@ -1,6 +1,14 @@
 @include govuk-exports("govuk/component/table") {
   .govuk-table {
-    @include govuk-font($size: 19, $tablet: 16);
+    @include govuk-font(
+      $size: 19,
+      $size-override: (
+        null: (
+          scale: 19,
+          breakpoint: "tablet"
+        )
+      )
+    );
     @include govuk-text-colour;
     width: 100%;
     @include govuk-responsive-margin(6, "bottom");

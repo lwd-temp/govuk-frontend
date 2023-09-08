@@ -114,77 +114,57 @@
 ///
 /// @access public
 
-@mixin govuk-typography-responsive($size, $tablet-size: false, $override-line-height: false, $important: false) {
+@mixin govuk-typography-responsive($size, $scale-override: false, $override-line-height: false, $important: false) {
   @if not map-has-key($govuk-typography-scale, $size) {
     @error "Unknown font size `#{$size}` - expected a point from the typography scale.";
   }
 
   $font-map: map-get($govuk-typography-scale, $size);
 
-  @if $tablet-size {
-    $tablet-font-map: map-get($govuk-typography-scale, $tablet-size);
+  @if $scale-override {
+    @each $override-breakpoint, $override-map in $scale-override {
+      $scale-value: map-get($override-map, "scale");
+      $scale-breakpoint: map-get($override-map, "breakpoint");
+      $override-map: map-get($govuk-typography-scale, $scale-value);
+      $override-breakpoint-map: map-get($override-map, $scale-breakpoint);
 
-    $mobile-map: map-get($font-map, "tablet");
-    $tablet-map: map-get($tablet-font-map, "tablet");
-    $print-map: map-get($font-map, "print");
-
-    $mobile-font-size: map-get($mobile-map, "font-size");
-    $tablet-font-size: map-get($tablet-map, "font-size");
-
-    $mobile-font-size-rem: govuk-px-to-rem($mobile-font-size);
-    $tablet-font-size-rem: govuk-px-to-rem($tablet-font-size);
-
-    $mobile-line-height: _govuk-line-height(
-      $line-height: if($override-line-height, $override-line-height, map-get($mobile-map, "line-height")),
-      $font-size: $mobile-font-size
-    );
-    $tablet-line-height: _govuk-line-height(
-      $line-height: map-get($mobile-map, "line-height"),
-      $font-size: $mobile-font-size
-    );
-
-    @include govuk-media-query($media-type: print) {
-      font-size: map-get($print-map, "font-size");
-      line-height: map-get($print-map, "line-height");
-    }
-
-    @include govuk-media-query($from: tablet) {
-      font-size: $tablet-font-size-rem;
-      line-height: $tablet-line-height;
-    }
-
-    font-size: $mobile-font-size-rem;
-    line-height: $mobile-line-height;
-  } @else {
-    @each $breakpoint, $breakpoint-map in $font-map {
-      $font-size: map-get($breakpoint-map, "font-size");
-      $font-size-rem: govuk-px-to-rem($font-size);
-
-      $line-height: _govuk-line-height(
-        $line-height: if($override-line-height, $override-line-height, map-get($breakpoint-map, "line-height")),
-        $font-size: $font-size
+      $font-map: map-merge(
+        $font-map,
+        (
+          $override-breakpoint: $override-breakpoint-map
+        )
       );
+    }
+  }
 
-      // Mark rules as !important if $important is true - this will result in
-      // these variables becoming strings, so this needs to happen *after* they
-      // are used in calculations
-      $font-size: $font-size if($important, !important, null);
-      $font-size-rem: $font-size-rem if($important, !important, null);
-      $line-height: $line-height if($important, !important, null);
+  @each $breakpoint, $breakpoint-map in $font-map {
+    $font-size: map-get($breakpoint-map, "font-size");
+    $font-size-rem: govuk-px-to-rem($font-size);
 
-      @if not $breakpoint {
+    $line-height: _govuk-line-height(
+      $line-height: if($override-line-height, $override-line-height, map-get($breakpoint-map, "line-height")),
+      $font-size: $font-size
+    );
+
+    // Mark rules as !important if $important is true - this will result in
+    // these variables becoming strings, so this needs to happen *after* they
+    // are used in calculations
+    $font-size: $font-size if($important, !important, null);
+    $font-size-rem: $font-size-rem if($important, !important, null);
+    $line-height: $line-height if($important, !important, null);
+
+    @if not $breakpoint {
+      font-size: $font-size-rem;
+      line-height: $line-height;
+    } @else if $breakpoint == "print" {
+      @include govuk-media-query($media-type: print) {
+        font-size: $font-size;
+        line-height: $line-height;
+      }
+    } @else {
+      @include govuk-media-query($from: $breakpoint) {
         font-size: $font-size-rem;
         line-height: $line-height;
-      } @else if $breakpoint == "print" {
-        @include govuk-media-query($media-type: print) {
-          font-size: $font-size;
-          line-height: $line-height;
-        }
-      } @else {
-        @include govuk-media-query($from: $breakpoint) {
-          font-size: $font-size-rem;
-          line-height: $line-height;
-        }
       }
     }
   }
@@ -204,7 +184,7 @@
 ///
 /// @access public
 
-@mixin govuk-font($size, $tablet: false, $weight: regular, $tabular: false, $line-height: false) {
+@mixin govuk-font($size, $size-override: false, $weight: regular, $tabular: false, $line-height: false) {
   @include govuk-typography-common;
 
   @if $tabular {
@@ -223,6 +203,6 @@
   }
 
   @if $size {
-    @include govuk-typography-responsive($size, $tablet-size: $tablet, $override-line-height: $line-height);
+    @include govuk-typography-responsive($size, $scale-override: $size-override, $override-line-height: $line-height);
   }
 }
