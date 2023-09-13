@@ -189,3 +189,166 @@
     @include govuk-typography-responsive($size, $override-line-height: $line-height);
   }
 }
+
+/// Font size helper
+///
+/// Get the font size and line height from the typography scale based on the
+/// scale point and breakpoint specified. We expect a font map to follow this
+/// rough format:
+///
+/// 24: (
+///   null: (
+///     font-size: 18px,
+///     line-height: 20px
+///   ),
+///   tablet: (
+///     font-size: 24px,
+///     line-height: 30px
+///   ),
+///   print: (
+///     font-size: 18pt,
+///     line-height: 1.15
+///   )
+/// )
+///
+/// @param {Number} $size Point from the typography scale. Will break if a value
+/// not from the typography scale is specified
+/// @param {String} $breakpoint The breakpoint within the font map retrieved from
+/// the typography scale via `$size`. Will break if a key not in the retrieved
+/// font map is specified
+/// @param {Number} $override-line-height [false] - line height value which will
+/// override the line height retrieved from the breakpoint map
+/// @param {Boolean} $print [true] - if the mixin should include the media query
+/// for print styles or not
+
+@mixin govuk-font-size($size, $breakpoint, $override-line-height: false, $print: true) {
+  @if not map-has-key($govuk-typography-scale, $size) {
+    @error "Unknown font size `#{$size}` - expected a point from the typography scale.";
+  }
+
+  $font-map: map-get($govuk-typography-scale, $size);
+
+  @if not map-has-key($font-map, $breakpoint) {
+    @error "Unknown breakpoint `#{$breakpoint}` - expected a breakpoint from the typography font maps such as `null` or `tablet`";
+  }
+
+  $breakpoint-map: map-get($font-map, $breakpoint);
+  $font-size: map-get($breakpoint-map, "font-size");
+
+  font-size: $font-size;
+  line-height: _govuk-line-height(
+    $line-height: if($override-line-height, $override-line-height, map-get($breakpoint-map, "line-height")),
+    $font-size: $font-size
+  );
+
+  @if $print {
+    $print-map: map-get($font-map, "print");
+    $print-font-size: map-get($print-map, "font-size");
+    $print-line-height: _govuk-line-height(
+      $line-height: map-get($print-map, "line-height"),
+      $font-size: $print-font-size
+    );
+
+    @include govuk-media-query($media-type: print) {
+      font-size: $print-font-size;
+      line-height: $print-line-height;
+    }
+  }
+}
+
+/// Responsive font size helper
+///
+/// Create font size and line height declarations across breakpoints. Like
+/// `govuk-font-size` but runs through every breakpoint in a map and automatically
+/// declares the font size and line height for that breakpoint within an associated
+/// media query.
+///
+/// @param {Number} $size Point from the typography scale. Will break if a value
+/// not from the typography scale is specified
+/// @param {Number} $override-line-height [false] - line height value which will
+/// override the line height retrieved from the breakpoint map
+@mixin govuk-responsive-font-size($size, $override-line-height: false) {
+  @if not map-has-key($govuk-typography-scale, $size) {
+    @error "Unknown font size `#{$size}` - expected a point from the typography scale.";
+  }
+
+  $font-map: map-get($govuk-typography-scale, $size);
+
+  @each $breakpoint, $breakpoint-map in $font-map {
+    $font-size: map-get($breakpoint-map, "font-size");
+    $font-size-rem: govuk-px-to-rem($font-size);
+
+    $line-height: _govuk-line-height(
+      $line-height: if($override-line-height, $override-line-height, map-get($breakpoint-map, "line-height")),
+      $font-size: $font-size
+    );
+
+    // Mark rules as !important if $important is true - this will result in
+    // these variables becoming strings, so this needs to happen *after* they
+    // are used in calculations
+    $font-size: $font-size;
+    $font-size-rem: $font-size-rem;
+    $line-height: $line-height;
+
+    @if not $breakpoint {
+      font-size: $font-size-rem;
+      line-height: $line-height;
+    } @else if $breakpoint == "print" {
+      @include govuk-media-query($media-type: print) {
+        font-size: $font-size;
+        line-height: $line-height;
+      }
+    } @else {
+      @include govuk-media-query($from: $breakpoint) {
+        font-size: $font-size-rem;
+        line-height: $line-height;
+      }
+    }
+  }
+}
+
+/// 'Common typography' helper
+///
+/// Sets the font family and associated properties, such as font smoothing. Also
+/// retrieves the correct font family by font weight and overrides the font for
+/// print.
+///
+/// @param {List} $font-family [$govuk-font-family] Font family to use
+/// @param {String} $weight [regular] - Specified font weight: `bold` or `regular`
+/// @access public
+
+@mixin govuk-typography($font-family: $govuk-font-family, $weight: regular) {
+  font-family: $font-family;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  // If the user is using the default GDS Transport font we need to include
+  // the font-face declarations.
+  @if $govuk-include-default-font-face {
+    @include _govuk-font-face-gds-transport;
+  }
+
+  @include govuk-media-query($media-type: print) {
+    font-family: $govuk-font-family-print;
+  }
+
+  @if $weight == regular {
+    font-weight: $govuk-font-weight-regular;
+  } @else if $weight == bold {
+    font-weight: $govuk-font-weight-bold;
+  }
+}
+
+/// Tabular typography helper
+///
+/// Specifies CSS font settings for if a particular typographic element is tabular
+/// data eg: a table of only numbers
+
+@mixin govuk-typography-tabular {
+  font-feature-settings: "tnum" 1;
+
+  @supports (font-variant-numeric: tabular-nums) {
+    font-feature-settings: normal;
+    font-variant-numeric: tabular-nums;
+  }
+}
