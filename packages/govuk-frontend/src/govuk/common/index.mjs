@@ -44,6 +44,10 @@ export function mergeConfigs(...configObjects) {
      */
     function flattenLoop(obj, prefix) {
       for (const [key, value] of Object.entries(obj)) {
+        if (value === undefined || value === null) {
+          continue
+        }
+
         const prefixedKey = prefix ? `${prefix}.${key}` : key
 
         // If the value is a nested object, recurse over that too
@@ -266,5 +270,5 @@ export function validateConfig(schema, config) {
 
 /**
  * @typedef {{ [key: string]: string | boolean | number }} ObjectFlat
- * @typedef {{ [key: string]: string | boolean | number | ObjectNested }} ObjectNested
+ * @typedef {{ [key: string]: string | boolean | number | null | undefined | ObjectNested }} ObjectNested
  */
