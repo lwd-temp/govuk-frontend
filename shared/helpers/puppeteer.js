@@ -381,7 +381,7 @@ module.exports = {
  *
  * @template {object} HandlerContext
  * @typedef {object} BrowserRenderOptions - Component render options
- * @property {Config[ConfigKey]} [config] - Component JavaScript config
+ * @property {ConfigComponent} [config] - Component JavaScript config
  * @property {HandlerContext} [context] - Context options for custom functions
  * @property {HandlerFunction<HandlerContext>} [beforeInitialisation] - Custom function to run before initialisation
  */
@@ -395,6 +395,5 @@ module.exports = {
 
 /**
  * @typedef {import('@govuk-frontend/lib/components').MacroRenderOptions} MacroRenderOptions
- * @typedef {import('govuk-frontend').Config} Config - Config for all components via `initAll()`
- * @typedef {import('govuk-frontend').ConfigKey} ConfigKey - Component config keys, e.g. `accordion` and `characterCount`
+ * @typedef {import('govuk-frontend').ConfigComponent} ConfigComponent - Component configs
  */

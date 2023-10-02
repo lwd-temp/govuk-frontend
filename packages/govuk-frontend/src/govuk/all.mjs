@@ -2,17 +2,19 @@
 
 import { version } from './common/govuk-frontend-version.mjs'
 import { isSupported } from './common/index.mjs'
-import { Accordion } from './components/accordion/accordion.mjs'
-import { Button } from './components/button/button.mjs'
-import { CharacterCount } from './components/character-count/character-count.mjs'
-import { Checkboxes } from './components/checkboxes/checkboxes.mjs'
-import { ErrorSummary } from './components/error-summary/error-summary.mjs'
-import { ExitThisPage } from './components/exit-this-page/exit-this-page.mjs'
-import { Header } from './components/header/header.mjs'
-import { NotificationBanner } from './components/notification-banner/notification-banner.mjs'
-import { Radios } from './components/radios/radios.mjs'
-import { SkipLink } from './components/skip-link/skip-link.mjs'
-import { Tabs } from './components/tabs/tabs.mjs'
+import {
+  Accordion,
+  Button,
+  CharacterCount,
+  Checkboxes,
+  ErrorSummary,
+  ExitThisPage,
+  Header,
+  NotificationBanner,
+  Radios,
+  SkipLink,
+  Tabs
+} from './components/index.mjs'
 import { SupportError } from './errors/index.mjs'
 
 /**
@@ -21,7 +23,7 @@ import { SupportError } from './errors/index.mjs'
  * Use the `data-module` attributes to find, instantiate and init all of the
  * components provided as part of GOV.UK Frontend.
  *
- * @param {Config & { scope?: Element }} [config] - Config for all components (with optional scope)
+ * @param {Partial<Config> & { scope?: Element }} [config] - Config for all components (with optional scope)
  */
 function initAll(config) {
   config = typeof config !== 'undefined' ? config : {}
@@ -90,12 +92,17 @@ export {
  * Config for all components via `initAll()`
  *
  * @typedef {object} Config
- * @property {AccordionConfig} [accordion] - Accordion config
- * @property {ButtonConfig} [button] - Button config
- * @property {CharacterCountConfig} [characterCount] - Character Count config
- * @property {ErrorSummaryConfig} [errorSummary] - Error Summary config
- * @property {ExitThisPageConfig} [exitThisPage] - Exit This Page config
- * @property {NotificationBannerConfig} [notificationBanner] - Notification Banner config
+ * @property {AccordionConfig} accordion - Accordion config
+ * @property {ButtonConfig} button - Button config
+ * @property {CharacterCountConfig} characterCount - Character Count config
+ * @property {ErrorSummaryConfig} errorSummary - Error Summary config
+ * @property {ExitThisPageConfig} exitThisPage - Exit This Page config
+ * @property {NotificationBannerConfig} notificationBanner - Notification Banner config
+ */
+
+/**
+ * @typedef {keyof import('./components/index.mjs')} ComponentName - Component names, e.g. `'Accordion'`, `'CharacterCount'`
+ * @typedef {import('./components/index.mjs')[ComponentName]} Component - Component types, e.g. `Accordion`, `CharacterCount`
  */
 
 /**
@@ -113,7 +120,6 @@ export {
  */
 
 /**
- * Component config keys, e.g. `accordion` and `characterCount`
- *
- * @typedef {keyof Config} ConfigKey
+ * @typedef {keyof Config} ConfigKey - Component config keys, e.g. `accordion` and `characterCount`
+ * @typedef {Config[ConfigKey]} ConfigComponent - Component configs
  */
