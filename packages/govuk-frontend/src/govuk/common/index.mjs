@@ -14,8 +14,8 @@
  * greatest priority on the LAST item passed in.
  *
  * @internal
- * @param {...{ [key: string]: unknown }} configObjects - Config object to merge
- * @returns {{ [key: string]: unknown }} A flattened object of key-value pairs.
+ * @param {...ObjectNested} configObjects - Config object to merge
+ * @returns {ObjectFlat} A flattened object of key-value pairs.
  */
 export function mergeConfigs(...configObjects) {
   /**
@@ -25,12 +25,12 @@ export function mergeConfigs(...configObjects) {
    * nested object.
    *
    * @internal
-   * @param {{ [key: string]: unknown }} configObject - Deeply nested object
-   * @returns {{ [key: string]: unknown }} Flattened object with dot-separated keys
+   * @param {ObjectNested} configObject - Deeply nested object
+   * @returns {ObjectFlat} Flattened object with dot-separated keys
    */
   function flattenObject(configObject) {
     // Prepare an empty return object
-    /** @type {{ [key: string]: unknown }} */
+    /** @type {ObjectFlat} */
     const flattenedObject = {}
 
     /**
@@ -39,7 +39,7 @@ export function mergeConfigs(...configObjects) {
      * the key using `prefix`.
      *
      * @internal
-     * @param {Partial<{ [key: string]: unknown }>} obj - Object to flatten
+     * @param {ObjectNested} obj - Object to flatten
      * @param {string} [prefix] - Optional dot-separated prefix
      */
     function flattenLoop(obj, prefix) {
@@ -62,7 +62,7 @@ export function mergeConfigs(...configObjects) {
   }
 
   // Start with an empty object as our base
-  /** @type {{ [key: string]: unknown }} */
+  /** @type {ObjectFlat} */
   const formattedConfigObject = {}
 
   // Loop through each of the passed objects
@@ -84,12 +84,12 @@ export function mergeConfigs(...configObjects) {
  * object, removing the namespace in the process.
  *
  * @internal
- * @param {{ [key: string]: unknown }} configObject - The object to extract key-value pairs from.
+ * @param {ObjectFlat} configObject - Flattened object to extract key-value pairs from.
  * @param {string} namespace - The namespace to filter keys with.
- * @returns {{ [key: string]: unknown }} Flattened object with dot-separated key namespace removed
+ * @returns {ObjectFlat} Flattened object with dot-separated key namespace removed
  */
 export function extractConfigByNamespace(configObject, namespace) {
-  /** @type {{ [key: string]: unknown }} */
+  /** @type {ObjectFlat} */
   const newObject = {}
 
   for (const [key, value] of Object.entries(configObject)) {
@@ -262,4 +262,9 @@ export function validateConfig(schema, config) {
  * @typedef {object} SchemaCondition
  * @property {string[]} required - List of required config fields
  * @property {string} errorMessage - Error message when required config fields not provided
+ */
+
+/**
+ * @typedef {{ [key: string]: string | boolean | number }} ObjectFlat
+ * @typedef {{ [key: string]: string | boolean | number | ObjectNested }} ObjectNested
  */
