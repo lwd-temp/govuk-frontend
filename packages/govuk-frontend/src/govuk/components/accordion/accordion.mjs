@@ -22,10 +22,7 @@ export class Accordion extends GOVUKFrontendComponent {
   /** @private */
   $module
 
-  /**
-   * @private
-   * @type {AccordionConfig}
-   */
+  /** @private */
   config
 
   /** @private */

@@ -15,10 +15,7 @@ export class Button extends GOVUKFrontendComponent {
   /** @private */
   $module
 
-  /**
-   * @private
-   * @type {ButtonConfig}
-   */
+  /** @private */
   config
 
   /**

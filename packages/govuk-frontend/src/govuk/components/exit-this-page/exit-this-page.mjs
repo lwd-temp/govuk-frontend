@@ -13,10 +13,7 @@ export class ExitThisPage extends GOVUKFrontendComponent {
   /** @private */
   $module
 
-  /**
-   * @private
-   * @type {ExitThisPageConfig}
-   */
+  /** @private */
   config
 
   /** @private */

@@ -49,10 +49,7 @@ export class CharacterCount extends GOVUKFrontendComponent {
    */
   valueChecker = null
 
-  /**
-   * @private
-   * @type {CharacterCountConfig}
-   */
+  /** @private */
   config
 
   /** @private */
@@ -456,6 +453,7 @@ export class CharacterCount extends GOVUKFrontendComponent {
    * Character count config schema
    *
    * @constant
+   * @override
    * @satisfies {Schema}
    */
   static schema = Object.freeze({

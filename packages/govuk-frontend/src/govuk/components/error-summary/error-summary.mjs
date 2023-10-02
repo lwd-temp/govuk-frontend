@@ -19,10 +19,7 @@ export class ErrorSummary extends GOVUKFrontendComponent {
   /** @private */
   $module
 
-  /**
-   * @private
-   * @type {ErrorSummaryConfig}
-   */
+  /** @private */
   config
 
   /**

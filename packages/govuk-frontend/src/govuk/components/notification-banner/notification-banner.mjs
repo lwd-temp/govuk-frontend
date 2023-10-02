@@ -12,10 +12,7 @@ export class NotificationBanner extends GOVUKFrontendComponent {
   /** @private */
   $module
 
-  /**
-   * @private
-   * @type {NotificationBannerConfig}
-   */
+  /** @private */
   config
 
   /**
