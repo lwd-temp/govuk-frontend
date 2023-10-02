@@ -126,13 +126,16 @@ export class Accordion extends GOVUKFrontendComponent {
 
     this.$module = $module
 
-    this.config = mergeConfigs(
-      Accordion.defaults,
-      config,
-      normaliseDataset($module.dataset)
+    // Merge component JavaScript config
+    this.config = mergeConfigs(Accordion.defaults, config)
+
+    // Flatten i18n config only
+    this.config.i18n = extractConfigByNamespace(
+      mergeConfigs(this.config, normaliseDataset($module.dataset)),
+      'i18n'
     )
 
-    this.i18n = new I18n(extractConfigByNamespace(this.config, 'i18n'))
+    this.i18n = new I18n(this.config.i18n)
 
     const $sections = this.$module.querySelectorAll(`.${this.sectionClass}`)
     if (!$sections.length) {
