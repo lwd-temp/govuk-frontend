@@ -58,15 +58,18 @@ export class Tabs extends GOVUKFrontendComponent {
       })
     }
 
+    this.$module = $module
+
     const $tabs = $module.querySelectorAll('a.govuk-tabs__tab')
     if (!$tabs.length) {
+      this.$module.classList.add('govuk-tabs--error')
+
       throw new ElementError({
         componentName: 'Tabs',
         identifier: 'Links (`<a class="govuk-tabs__tab">`)'
       })
     }
 
-    this.$module = $module
     this.$tabs = $tabs
 
     // Save bound functions so we can remove event listeners during teardown
@@ -80,6 +83,8 @@ export class Tabs extends GOVUKFrontendComponent {
     )
 
     if (!$tabList) {
+      this.$module.classList.add('govuk-tabs--error')
+
       throw new ElementError({
         componentName: 'Tabs',
         identifier: 'List (`<ul class="govuk-tabs__list">`)'
@@ -87,6 +92,8 @@ export class Tabs extends GOVUKFrontendComponent {
     }
 
     if (!$tabListItems.length) {
+      this.$module.classList.add('govuk-tabs--error')
+
       throw new ElementError({
         componentName: 'Tabs',
         identifier: 'List items (`<li class="govuk-tabs__list-item">`)'
