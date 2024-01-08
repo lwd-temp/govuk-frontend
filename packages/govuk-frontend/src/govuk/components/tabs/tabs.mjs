@@ -48,7 +48,7 @@ export class Tabs extends GOVUKFrontendComponent {
    * @param {Element | null} $module - HTML element to use for tabs
    */
   constructor($module) {
-    super()
+    super($module)
 
     if (!$module) {
       throw new ElementError({
