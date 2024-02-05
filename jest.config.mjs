@@ -4,7 +4,7 @@ import { replacePathSepForRegex } from 'jest-regex-util'
 import jestPuppeteerConfig from './jest-puppeteer.config.js'
 
 // Detect when browser has been launched headless
-const { headless = 'new' } = jestPuppeteerConfig.launch
+const { headless = true } = jestPuppeteerConfig.launch ?? {}
 
 /**
  * Jest project config defaults
@@ -84,7 +84,7 @@ export default {
   // Reduce CPU usage during project test runs
   maxWorkers: headless
     ? '50%' // Matches Jest default (50%) via `--watch`
-    : 1, // Use only 1x browser window when headless
+    : 1, // Use only 1x browser window when not headless
 
   projects: [
     {
