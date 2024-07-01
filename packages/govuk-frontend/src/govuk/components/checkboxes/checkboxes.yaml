@@ -265,6 +265,7 @@ examples:
   - name: with hints on items
     options:
       name: with-hints-on-items
+      screenshot: true
       fieldset:
         legend:
           text: How do you want to sign in?
@@ -519,6 +520,7 @@ examples:
               <input class="govuk-input govuk-!-width-one-third" name="contact-text-message" type="text" id="contact-text-message">
 
   - name: with conditional item checked
+    screenshot: true
     options:
       name: how-contacted-checked
       idPrefix: how-contacted-checked
@@ -578,6 +580,7 @@ examples:
               <input class="govuk-input govuk-!-width-one-third" name="contact-text-message" type="text" id="contact-text-message">
 
   - name: small
+    screenshot: true
     options:
       idPrefix: nationality
       name: nationality
@@ -708,7 +711,7 @@ examples:
           text: Option 1
         - value: 2
           text: Option 2
-  - name: with falsey values
+  - name: with falsy values
     hidden: true
     options:
       name: example-name

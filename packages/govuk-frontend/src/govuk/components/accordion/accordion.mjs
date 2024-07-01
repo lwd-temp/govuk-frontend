@@ -91,9 +91,6 @@ export class Accordion extends GOVUKFrontendComponent {
   /** @private */
   $sections
 
-  /** @private */
-  browserSupportsSessionStorage = false
-
   /**
    * @private
    * @type {HTMLButtonElement | null}
@@ -146,14 +143,11 @@ export class Accordion extends GOVUKFrontendComponent {
     }
 
     this.$sections = $sections
-    this.browserSupportsSessionStorage = helper.checkForSessionStorage()
 
     this.initControls()
     this.initSectionHeaders()
 
-    // See if "Show all sections" button text should be updated
-    const areAllSectionsOpen = this.checkIfAllSectionsOpen()
-    this.updateShowAllButton(areAllSectionsOpen)
+    this.updateShowAllButton(this.areAllSectionsOpen())
   }
 
   /**
@@ -263,8 +257,8 @@ export class Accordion extends GOVUKFrontendComponent {
     // Copy all attributes from $span to $button (except `id`, which gets added
     // to the `$headingText` element)
     for (const attr of Array.from($span.attributes)) {
-      if (attr.nodeName !== 'id') {
-        $button.setAttribute(attr.nodeName, `${attr.nodeValue}`)
+      if (attr.name !== 'id') {
+        $button.setAttribute(attr.name, attr.value)
       }
     }
 
@@ -282,7 +276,9 @@ export class Accordion extends GOVUKFrontendComponent {
     $headingText.appendChild($headingTextFocus)
     // span could contain HTML elements
     // (see https://www.w3.org/TR/2011/WD-html5-20110525/content-models.html#phrasing-content)
-    $headingTextFocus.innerHTML = $span.innerHTML
+    Array.from($span.childNodes).forEach(($child) =>
+      $headingTextFocus.appendChild($child)
+    )
 
     // Create container for show / hide icons and text.
     const $showHideToggle = document.createElement('span')
@@ -312,7 +308,7 @@ export class Accordion extends GOVUKFrontendComponent {
     $button.appendChild(this.getButtonPunctuationEl())
 
     // If summary content exists add to DOM in correct order
-    if ($summary?.parentNode) {
+    if ($summary) {
       // Create a new `span` element and copy the summary line content from the
       // original `div` to the new `span`. This is because the summary line text
       // is now inside a button element, which can only contain phrasing
@@ -326,14 +322,16 @@ export class Accordion extends GOVUKFrontendComponent {
 
       // Get original attributes, and pass them to the replacement
       for (const attr of Array.from($summary.attributes)) {
-        $summarySpan.setAttribute(attr.nodeName, `${attr.nodeValue}`)
+        $summarySpan.setAttribute(attr.name, attr.value)
       }
 
       // Copy original contents of summary to the new summary span
-      $summarySpanFocus.innerHTML = $summary.innerHTML
+      Array.from($summary.childNodes).forEach(($child) =>
+        $summarySpanFocus.appendChild($child)
+      )
 
       // Replace the original summary `div` with the new summary `span`
-      $summary.parentNode.replaceChild($summarySpan, $summary)
+      $summary.remove()
 
       $button.appendChild($summarySpan)
       $button.appendChild(this.getButtonPunctuationEl())
@@ -373,11 +371,11 @@ export class Accordion extends GOVUKFrontendComponent {
    * @param {Element} $section - Section element
    */
   onSectionToggle($section) {
-    const expanded = this.isExpanded($section)
-    this.setExpanded(!expanded, $section)
+    const nowExpanded = !this.isExpanded($section)
+    this.setExpanded(nowExpanded, $section)
 
     // Store the state in sessionStorage when a change is triggered
-    this.storeState($section)
+    this.storeState($section, nowExpanded)
   }
 
   /**
@@ -386,11 +384,11 @@ export class Accordion extends GOVUKFrontendComponent {
    * @private
    */
   onShowOrHideAllToggle() {
-    const nowExpanded = !this.checkIfAllSectionsOpen()
+    const nowExpanded = !this.areAllSectionsOpen()
 
     this.$sections.forEach(($section) => {
       this.setExpanded(nowExpanded, $section)
-      this.storeState($section)
+      this.storeState($section, nowExpanded)
     })
 
     this.updateShowAllButton(nowExpanded)
@@ -469,8 +467,7 @@ export class Accordion extends GOVUKFrontendComponent {
     }
 
     // See if "Show all sections" button text should be updated
-    const areAllSectionsOpen = this.checkIfAllSectionsOpen()
-    this.updateShowAllButton(areAllSectionsOpen)
+    this.updateShowAllButton(this.areAllSectionsOpen())
   }
 
   /**
@@ -490,14 +487,10 @@ export class Accordion extends GOVUKFrontendComponent {
    * @private
    * @returns {boolean} True if all sections are open
    */
-  checkIfAllSectionsOpen() {
-    const sectionsCount = this.$sections.length
-    const expandedSectionCount = this.$module.querySelectorAll(
-      `.${this.sectionExpandedClass}`
-    ).length
-    const areAllSectionsOpen = sectionsCount === expandedSectionCount
-
-    return areAllSectionsOpen
+  areAllSectionsOpen() {
+    return Array.from(this.$sections).every(($section) =>
+      this.isExpanded($section)
+    )
   }
 
   /**
@@ -519,28 +512,39 @@ export class Accordion extends GOVUKFrontendComponent {
   }
 
   /**
+   * Get the identifier for a section
+   *
+   * We need a unique way of identifying each content in the Accordion.
+   * Since an `#id` should be unique and an `id` is required for `aria-`
+   * attributes `id` can be safely used.
+   *
+   * @param {Element} $section - Section element
+   * @returns {string | undefined | null} Identifier for section
+   */
+  getIdentifier($section) {
+    const $button = $section.querySelector(`.${this.sectionButtonClass}`)
+
+    return $button?.getAttribute('aria-controls')
+  }
+
+  /**
    * Set the state of the accordions in sessionStorage
    *
    * @private
    * @param {Element} $section - Section element
+   * @param {boolean} isExpanded - Whether the section is expanded
    */
-  storeState($section) {
-    if (this.browserSupportsSessionStorage && this.config.rememberExpanded) {
-      // We need a unique way of identifying each content in the Accordion.
-      // Since an `#id` should be unique and an `id` is required for `aria-`
-      // attributes `id` can be safely used.
-      const $button = $section.querySelector(`.${this.sectionButtonClass}`)
+  storeState($section, isExpanded) {
+    if (!this.config.rememberExpanded) {
+      return
+    }
 
-      if ($button) {
-        const contentId = $button.getAttribute('aria-controls')
-        const contentState = $button.getAttribute('aria-expanded')
+    const id = this.getIdentifier($section)
 
-        // Only set the state when both `contentId` and `contentState` are taken
-        // from the DOM.
-        if (contentId && contentState) {
-          window.sessionStorage.setItem(contentId, contentState)
-        }
-      }
+    if (id) {
+      try {
+        window.sessionStorage.setItem(id, isExpanded.toString())
+      } catch (exception) {}
     }
   }
 
@@ -551,19 +555,20 @@ export class Accordion extends GOVUKFrontendComponent {
    * @param {Element} $section - Section element
    */
   setInitialState($section) {
-    if (this.browserSupportsSessionStorage && this.config.rememberExpanded) {
-      const $button = $section.querySelector(`.${this.sectionButtonClass}`)
+    if (!this.config.rememberExpanded) {
+      return
+    }
 
-      if ($button) {
-        const contentId = $button.getAttribute('aria-controls')
-        const contentState = contentId
-          ? window.sessionStorage.getItem(contentId)
-          : null
+    const id = this.getIdentifier($section)
 
-        if (contentState !== null) {
-          this.setExpanded(contentState === 'true', $section)
+    if (id) {
+      try {
+        const state = window.sessionStorage.getItem(id)
+
+        if (state !== null) {
+          this.setExpanded(state === 'true', $section)
         }
-      }
+      } catch (exception) {}
     }
   }
 
@@ -584,7 +589,7 @@ export class Accordion extends GOVUKFrontendComponent {
       'govuk-visually-hidden',
       this.sectionHeadingDividerClass
     )
-    $punctuationEl.innerHTML = ', '
+    $punctuationEl.textContent = ', '
     return $punctuationEl
   }
 
@@ -624,27 +629,6 @@ export class Accordion extends GOVUKFrontendComponent {
       rememberExpanded: { type: 'boolean' }
     }
   })
-}
-
-const helper = {
-  /**
-   * Check for `window.sessionStorage`, and that it actually works.
-   *
-   * @returns {boolean} True if session storage is available
-   */
-  checkForSessionStorage: function () {
-    const testString = 'this is the test string'
-    let result
-    try {
-      window.sessionStorage.setItem(testString, testString)
-      result =
-        window.sessionStorage.getItem(testString) === testString.toString()
-      window.sessionStorage.removeItem(testString)
-      return result
-    } catch (exception) {
-      return false
-    }
-  }
 }
 
 /**

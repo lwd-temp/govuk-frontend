@@ -14,21 +14,21 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@axe-core/puppeteer": "^4.8.5",
+    "@axe-core/puppeteer": "^4.9.1",
     "@govuk-frontend/config": "*",
     "@govuk-frontend/lib": "*",
     "cheerio": "^1.0.0-rc.12",
     "govuk-frontend": "*",
-    "jest-axe": "^8.0.0",
+    "jest-axe": "^9.0.0",
     "jest-dev-server": "^10.0.0",
     "jest-environment-jsdom": "^29.7.0",
     "jest-environment-node-single-context": "^29.4.0",
     "jest-environment-puppeteer": "^10.0.0",
     "mime-types": "^2.1.35",
     "outdent": "^0.8.0",
-    "puppeteer": "^22.6.2",
-    "sass-embedded": "^1.72.0",
-    "slug": "^9.0.0"
+    "puppeteer": "^22.12.1",
+    "sass-embedded": "^1.77.5",
+    "slug": "^9.1.0"
   },
   "peerDependencies": {
     "@puppeteer/browsers": "^2.1.0",
